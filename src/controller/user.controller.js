@@ -1,5 +1,6 @@
 // libs
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userService = require("../service/user.service");
 
@@ -217,4 +218,41 @@ module.exports = {
       });
     }
   },
+
+  refreshToken: async (req, res) => {
+    // const refresh_token = req.header('refresh-token');
+    const refresh_token = req.body.data?.refresh_token || '';
+
+    if(!refresh_token) {
+      res.status(400).json({
+        msg: "No refresh token",
+        isSucess: false,
+      });
+      return;
+    }
+    
+    jwt.verify(refresh_token, process.env.TOKEN_SECRET, (err, user) => {
+      if(err) {
+        res.status(401).json({
+          msg: "No authenticate",
+          isSucess: false,
+        });
+        return
+      }
+
+      // create new token
+      const payload = { user };
+      const access_token = generateAccessToken(payload);
+      res.status(200).json({
+        msg: "Refresh token successfuly!",
+        isSucess: true,
+        data: {
+          access_token
+        }
+      });
+    })
+
+    
+  }
+
 };
