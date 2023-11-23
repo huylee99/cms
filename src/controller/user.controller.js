@@ -44,7 +44,7 @@ module.exports = {
         data: user,
       });
     } catch (err) {
-      res.status(400).json({
+      res.status(500).json({
         msg: "Create user error",
         isSucess: false,
         data: null,
@@ -116,10 +116,14 @@ module.exports = {
   resetPassword: async (req, res) => {},
 
   getAllUsers: async (req, res) => {
+    // /api/user?page=2&limit=2
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const startOffSet = (page - 1) * limit;
-    const endOfSet = startOffSet + limit;
+    const startOffSet = (page - 1) * limit; // 2
+    const endOfSet = startOffSet + limit; // 4
+    /*
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].slice(2, 4) -> [3, 4]
+    */
 
     try {
       const users = await userService.findAll();
